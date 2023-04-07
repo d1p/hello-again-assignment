@@ -9,8 +9,13 @@ celery = "*"
 django-redis = "*"
 psycopg2 = "*"
 django-environ = "*"
+google-play-scraper = "*"
+django-celery-results = "*"
 
 [dev-packages]
+pytest = "*"
+pytest-django = "*"
+pytest-celery = "*"
 
 [requires]
 python_version = "3.11"

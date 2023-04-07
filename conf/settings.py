@@ -25,7 +25,10 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
-THIRD_PARTY_APPS = []
+THIRD_PARTY_APPS = [
+    'django_celery_results',
+]
+
 LOCAL_APPS = ['apps.review', ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
