@@ -28,7 +28,7 @@
 9. Run `python manage.py runserver`
 
 ### Testing
-1. Run `docker-compose exec web python manage.py test`
+1. Run `pytest`
 
 ## Posible improvements
 - Add more tests
@@ -37,6 +37,7 @@
 - Add more fields to the model
 - Add more filters to the admin
 - Optimize docker image
+- Make tests run in docker
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

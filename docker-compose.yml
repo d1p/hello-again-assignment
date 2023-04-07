@@ -22,7 +22,7 @@ services:
     environment:
       - POSTGRES_USER=django_user
       - POSTGRES_PASSWORD=django_user_password
-      - POSTGRES_DB=django_dev, django_test
+      - POSTGRES_DB=django_dev
 
   redis:
     image: redis:7-alpine
