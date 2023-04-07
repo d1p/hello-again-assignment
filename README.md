@@ -22,10 +22,10 @@
 3. Install the requirements with `pipenv install`
 4. Create a postgresql database
 5. Create redis instance
-7. Edit the `.env` file with your database, redis credentials
-8. Run `python manage.py migrate`
-9. Run `python manage.py createsuperuser`
-10. Run `python manage.py runserver`
+6. Edit the `.env` file with your database, redis credentials
+7. Run `python manage.py migrate`
+8. Run `python manage.py createsuperuser`
+9. Run `python manage.py runserver`
 
 ### Testing
 1. Run `docker-compose exec web python manage.py test`
