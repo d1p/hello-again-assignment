@@ -9,6 +9,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def get_app_id_from_url(url: str) -> str:
     """Get app id from url."""
     try:
@@ -18,6 +19,19 @@ def get_app_id_from_url(url: str) -> str:
     except IndexError:
         return ""
     return app_id
+
+
+def bulk_create_reviews(reviews: list, review_url_id: int):
+    """Bulk create reviews."""
+    PlayStoreReview.objects.bulk_create(
+        [PlayStoreReview(
+            review_url_id=review_url_id,
+            user_name=review["userName"],
+            rating=review["score"],
+            review_text=review["content"],
+            at=review["at"],
+        ) for review in reviews])
+
 
 @app.task(bind=True, max_retries=3, default_retry_delay=60)
 def index_all_reviews(*args, **kwargs):
@@ -46,20 +60,14 @@ def index_all_reviews(*args, **kwargs):
     logger.debug(f"Found {len(all_reviews)} reviews")
 
     # save all reviews
-    PlayStoreReview.objects.bulk_create(
-        [PlayStoreReview(
-            review_url=review_url,
-            user_name=review["userName"],
-            rating=review["score"],
-            review_text=review["content"],
-        ) for review in all_reviews])
+    bulk_create_reviews(all_reviews, review_url_id)
 
     logger.debug(f"Saved {len(all_reviews)} reviews")
 
 
 @app.task(bind=True, max_retries=3, default_retry_delay=60)
 def index_latest_reviews(*args, **kwargs):
-    review_url_id: int= kwargs.get("review_url_id")
+    review_url_id: int = kwargs.get("review_url_id")
     logger.debug(f"Indexing latest reviews for review url id {review_url_id}")
 
     try:
@@ -73,7 +81,7 @@ def index_latest_reviews(*args, **kwargs):
     if not app_id:
         return
 
-    last_review_time = review_url.reviews.last().created_at if review_url.reviews.exists() else datetime.min
+    last_review_time = review_url.reviews.last().at if review_url.reviews.exists() else datetime.min
 
     continue_token = None
     while True:
@@ -93,13 +101,7 @@ def index_latest_reviews(*args, **kwargs):
             break
 
         # save all reviews
-        PlayStoreReview.objects.bulk_create(
-            [PlayStoreReview(
-                review_url=review_url,
-                user_name=review["userName"],
-                rating=review["score"],
-                review_text=review["content"],
-            ) for review in latest_reviews])
+        bulk_create_reviews(latest_reviews, review_url_id)
 
         if continue_token is None:
             break

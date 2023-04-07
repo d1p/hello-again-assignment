@@ -23,9 +23,9 @@ class ReviewURLAdmin(admin.ModelAdmin):
 
 @admin.register(PlayStoreReview)
 class PlayStoreReviewAdmin(admin.ModelAdmin):
-    list_display = ('review_url', 'user_name', 'rating', 'review_text', 'created_at', 'updated_at')
-    list_filter = ('created_at', 'updated_at')
-    search_fields = ('user_name', 'review_text')
+    list_display = ('review_url', 'user_name', 'rating', 'review_text', 'at', 'created_at', 'updated_at')
+    list_filter = ('at', 'created_at', 'updated_at')
+    search_fields = ('user_name',)
 
     class Meta:
         fields = '__all__'
