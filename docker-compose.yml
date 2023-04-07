@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    restart: always
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./:/usr/src/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=django_user
+      - POSTGRES_PASSWORD=django_user_password
+      - POSTGRES_DB=django_dev, django_test
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - cache:/data
+
+  celery:
+    build: .
+    command: celery -A conf worker -l info
+    volumes:
+      - ./:/usr/src/app
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+      - redis
+
+  celery-beat:
+    build: .
+    command: celery -A conf beat -l info
+    volumes:
+      - ./:/usr/src/app
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+      - redis
+      - celery
+volumes:
+  postgres_data:
+  cache:
