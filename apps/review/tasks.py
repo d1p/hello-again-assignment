@@ -9,6 +9,15 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+def get_app_id_from_url(url: str) -> str:
+    """Get app id from url."""
+    try:
+        app_id: str = url.split("id=")[1]
+        if "&" in app_id:
+            app_id = app_id.split("&")[0]
+    except IndexError:
+        return ""
+    return app_id
 
 @app.task(bind=True, max_retries=3, default_retry_delay=60)
 def index_all_reviews(*args, **kwargs):
@@ -23,10 +32,8 @@ def index_all_reviews(*args, **kwargs):
 
     url: str = review_url.url
 
-    # get all reviews
-    try:
-        app_id: str = url.split("id=")[1]
-    except IndexError:
+    app_id = get_app_id_from_url(url)
+    if not app_id:
         return
 
     all_reviews = reviews_all(
@@ -62,10 +69,8 @@ def index_latest_reviews(*args, **kwargs):
 
     url: str = review_url.url
 
-    # get all reviews
-    try:
-        app_id: str = url.split("id=")[1]
-    except IndexError:
+    app_id = get_app_id_from_url(url)
+    if not app_id:
         return
 
     last_review_time = review_url.reviews.last().created_at if review_url.reviews.exists() else datetime.min
